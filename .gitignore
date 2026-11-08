@@ -1,0 +1,14 @@
+# Vivado build outputs (rigenerabili con build.tcl)
+build/
+.Xil/
+*.jou
+*.log
+*.str
+usage_statistics_webtalk.*
+
+# xsim
+xsim.dir/
+*.wdb
+*.pb
+webtalk*
+frame.ppm
