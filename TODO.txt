@@ -1,9 +1,0 @@
-I have a Digilent Cmod A7 35T and I use Vivado to program it in Verilog. The Cmod is attached to my computer via the USB cable.
-
-I also have a breakout board VGA connector breadboard-friendly.
-
-I want to use the Cmod A7 to produce a VGA signal having the following characteristics:
-- 320x200 (256 colors / a.k.a Mode 13h)
-- each color is a complete RGB color, 2 bits per color, with the following format: 0b00rrggbb
-
-Tell me the electrical circuit needed to interface the Digilent Cmod A7 35T with the pins of the VGA connector.
