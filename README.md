@@ -4,6 +4,8 @@ Controller VGA in Verilog per la Digilent Cmod A7-35T, con un connettore VGA
 breakout su breadboard. L'uscita è 320x200 in stile "mode 13h", e ogni pixel
 è nel formato `0b00rrggbb` (2 bit per colore, 64 colori).
 
+![static test image](sim/test_pattern_sim.png)
+
 ## Stato
 
 | Passo | Contenuto | Verificato sul monitor |
