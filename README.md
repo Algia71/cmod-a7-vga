@@ -46,7 +46,7 @@ VGA pins not connected: 4, 9, 11, 12, 15.
 ## Timing
 
 320x200 is shown as 640x400 at 70 Hz, with each logical pixel doubled into
-2x2 physical pixels. Some monitors report the mode as 720x400.
+2x2 physical pixels. Some monitors, like mine, report the mode as 720x400.
 
 | | Visible | Front porch | Sync | Back porch | Total | Polarity |
 |---|---|---|---|---|---|---|
@@ -123,3 +123,7 @@ xsim tb_top -R
 ```
 
 Both testbenches print `PASS` or `FAIL` with the number of errors.
+
+## AI disclaimer
+
+Claude Opus 5.5 was used to generate Verilog code and TCL scripts.
