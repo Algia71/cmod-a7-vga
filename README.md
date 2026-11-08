@@ -4,6 +4,13 @@ A Verilog VGA controller for the Digilent Cmod A7-35T, driving a VGA breakout
 connector on a breadboard. The output is 320x200 in "mode 13h" style, and each
 pixel uses the format `0b00rrggbb` (2 bits per colour, 64 colours).
 
+## Features
+- VGA 320x200@70Hz 64 colours
+- static image produced via combinatorial logic
+- Cmod pushbutton 0 resets the logic
+- Cmod LED 0 always on; off during reset
+- Cmod LED 1 blinks once per second; off during reset
+
 ![the real circuit on breadboard](img/the_real_circuit.jpg)
 
 ![static test image](sim/test_pattern_sim.png)
