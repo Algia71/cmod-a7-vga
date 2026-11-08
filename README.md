@@ -1,105 +1,105 @@
-# Cmod A7-35T VGA — modo 13h (320x200, RGB222)
+# Cmod A7-35T VGA — mode 13h (320x200, RGB222)
 
-Controller VGA in Verilog per la Digilent Cmod A7-35T, con un connettore VGA
-breakout su breadboard. L'uscita è 320x200 in stile "mode 13h", e ogni pixel
-è nel formato `0b00rrggbb` (2 bit per colore, 64 colori).
+A Verilog VGA controller for the Digilent Cmod A7-35T, driving a VGA breakout
+connector on a breadboard. The output is 320x200 in "mode 13h" style, and each
+pixel uses the format `0b00rrggbb` (2 bits per colour, 64 colours).
 
 ![the real circuit on breadboard](img/the_real_circuit.jpg)
 
 ![static test image](sim/test_pattern_sim.png)
 
-## Stato
+## Status
 
-| Passo | Contenuto | Verificato sul monitor |
-|-------|-----------|------------------------|
-| 1 | HSync/VSync 640x400 @ 70 Hz, schermo nero | sì |
-| 2 | Immagine di test statica (barre, rampe, griglia a 64 colori, bordo) | sì |
-| — | LED RGB spento, reset con BTN0, avvio da flash all'accensione | sì |
+| Step | Content | Verified on the monitor |
+|------|---------|-------------------------|
+| 1 | HSync/VSync 640x400 @ 70 Hz, black screen | yes |
+| 2 | Static test image (bars, ramps, 64-colour grid, border) | yes |
+| — | RGB LED off, reset with BTN0, boot from flash at power-on | yes |
 
-## Circuito
+## Circuit
 
-Pin DIP della Cmod collegati direttamente all'FPGA (senza resistenze in serie
-sulla scheda). Ogni canale colore è un DAC a 2 bit con resistenze pesate:
-con il carico di 75 Ω del monitor dà circa 0 / 0,24 / 0,48 / 0,70 V.
+The Cmod DIP pins connect directly to the FPGA (there are no series resistors
+on the board). Each colour channel is a 2-bit weighted-resistor DAC: with the
+monitor's 75 Ω load it gives about 0 / 0.24 / 0.48 / 0.70 V.
 
-| DIP Cmod | Pin FPGA | Segnale    | Resistenza | Pin VGA |
-|----------|----------|------------|------------|---------|
-| 1        | M3       | `vga_vs`   | 100 Ω      | 14 VSync |
-| 2        | L3       | `vga_hs`   | 100 Ω      | 13 HSync |
-| 3        | A16      | `vga_b[1]` | 390 Ω      | 3 Blue (MSB) |
-| 4        | K3       | `vga_b[0]` | 820 Ω      | 3 Blue (LSB) |
-| 5        | C15      | `vga_g[1]` | 390 Ω      | 2 Green (MSB) |
-| 6        | H1       | `vga_g[0]` | 820 Ω      | 2 Green (LSB) |
-| 7        | A15      | `vga_r[1]` | 390 Ω      | 1 Red (MSB) |
-| 8        | B15      | `vga_r[0]` | 820 Ω      | 1 Red (LSB) |
-| 25 (GND) | —        | massa      | —          | 5, 6, 7, 8, 10 |
+| Cmod DIP | FPGA pin | Signal     | Resistor | VGA pin |
+|----------|----------|------------|----------|---------|
+| 1        | M3       | `vga_vs`   | 100 Ω    | 14 VSync |
+| 2        | L3       | `vga_hs`   | 100 Ω    | 13 HSync |
+| 3        | A16      | `vga_b[1]` | 390 Ω    | 3 Blue (MSB) |
+| 4        | K3       | `vga_b[0]` | 820 Ω    | 3 Blue (LSB) |
+| 5        | C15      | `vga_g[1]` | 390 Ω    | 2 Green (MSB) |
+| 6        | H1       | `vga_g[0]` | 820 Ω    | 2 Green (LSB) |
+| 7        | A15      | `vga_r[1]` | 390 Ω    | 1 Red (MSB) |
+| 8        | B15      | `vga_r[0]` | 820 Ω    | 1 Red (LSB) |
+| 25 (GND) | —        | ground     | —        | 5, 6, 7, 8, 10 |
 
-Pin VGA non collegati: 4, 9, 11, 12, 15.
+VGA pins not connected: 4, 9, 11, 12, 15.
 
-## Temporizzazione
+## Timing
 
-320x200 viene mostrato come 640x400 a 70 Hz, con ogni pixel logico raddoppiato
-in 2x2 pixel fisici. Alcuni monitor riportano la modalità come 720x400.
+320x200 is shown as 640x400 at 70 Hz, with each logical pixel doubled into
+2x2 physical pixels. Some monitors report the mode as 720x400.
 
-| | Visibile | Front porch | Sync | Back porch | Totale | Polarità |
+| | Visible | Front porch | Sync | Back porch | Total | Polarity |
 |---|---|---|---|---|---|---|
-| Orizzontale (pixel) | 640 | 16 | 96 | 48 | 800 | negativa |
-| Verticale (righe)   | 400 | 12 | 2  | 35 | 449 | positiva |
+| Horizontal (pixels) | 640 | 16 | 96 | 48 | 800 | negative |
+| Vertical (lines)    | 400 | 12 | 2  | 35 | 449 | positive |
 
-Il pixel clock è 25,2 MHz, ricavato dai 12 MHz della scheda con un MMCM
-(12 × 63 / 30, VCO a 756 MHz): 31,5 kHz di riga e 70,16 Hz di quadro.
+The pixel clock is 25.2 MHz, derived from the board's 12 MHz with an MMCM
+(12 × 63 / 30, VCO at 756 MHz): 31.5 kHz line rate and 70.16 Hz frame rate.
 
-## File
+## Files
 
-| File | Contenuto |
-|------|-----------|
-| `rtl/vga_top.v` | Top level: reset, pipeline colore/sync, LED |
-| `rtl/vga_clk_gen.v` | MMCM 12 → 25,2 MHz |
-| `rtl/vga_timing.v` | Contatori e segnali HSync/VSync/active |
-| `rtl/test_pattern.v` | Immagine di test 320x200 |
-| `cmod_a7_vga.xdc` | Pin, clock e opzioni di boot da Quad-SPI |
-| `sim/tb_vga_timing.v` | Testbench auto-verificante della temporizzazione |
-| `sim/tb_vga_top.v` | Testbench "monitor virtuale" dell'intero chip; scrive `frame.ppm` |
-| `sim/test_pattern_sim.png` | Fotogramma simulato di riferimento |
-| `build.tcl` | Sintesi e implementazione; genera `.bit` e `.bin` |
-| `program.tcl` | Caricamento via JTAG (volatile) |
-| `program_flash.tcl` | Scrittura nella flash Quad-SPI e riavvio dalla flash |
+| File | Content |
+|------|---------|
+| `rtl/vga_top.v` | Top level: reset, colour/sync pipeline, LEDs |
+| `rtl/vga_clk_gen.v` | MMCM 12 → 25.2 MHz |
+| `rtl/vga_timing.v` | Counters and HSync/VSync/active signals |
+| `rtl/test_pattern.v` | 320x200 test image |
+| `cmod_a7_vga.xdc` | Pins, clock and Quad-SPI boot options |
+| `sim/tb_vga_timing.v` | Self-checking timing testbench |
+| `sim/tb_vga_top.v` | Full-chip "virtual monitor" testbench; writes `frame.ppm` |
+| `sim/test_pattern_sim.png` | Reference simulated frame |
+| `build.tcl` | Synthesis and implementation; generates `.bit` and `.bin` |
+| `program.tcl` | Load over JTAG (volatile) |
+| `program_flash.tcl` | Write to the Quad-SPI flash and reboot from it |
 
-LED della scheda: `led[0]` acceso quando l'MMCM è agganciato, `led[1]`
-lampeggia a 1 Hz contando i quadri. Il LED RGB è tenuto spento.
-BTN0 tiene il circuito in reset finché è premuto.
+Board LEDs: `led[0]` is on when the MMCM is locked, `led[1]` blinks at 1 Hz
+by counting frames. The RGB LED is kept off. BTN0 holds the design in reset
+while pressed.
 
-## Uso (Vivado 2026.1)
+## Usage (Vivado 2026.1)
 
-Compilazione (crea `build/vga_top.bit`, `build/vga_top.bin` e i report):
+Build (creates `build/vga_top.bit`, `build/vga_top.bin` and the reports):
 
 ```
 vivado -mode batch -source build.tcl
 ```
 
-Caricamento temporaneo via JTAG (si perde allo spegnimento):
+Temporary load over JTAG (lost at power-off):
 
 ```
 vivado -mode batch -source program.tcl
 ```
 
-Scrittura permanente nella flash, così il progetto parte da solo all'accensione:
+Permanent write to the flash, so the design starts by itself at power-on:
 
 ```
 vivado -mode batch -source program_flash.tcl
 ```
 
-La flash di questa scheda è una Macronix MX25L3273F
-(`mx25l3273f-spi-x1_x2_x4`), non la Micron N25Q032A indicata nel manuale.
-Su schede con un'altra flash si passa il nome della parte come argomento:
-`-tclargs <parte cfgmem>`.
+The flash on this board is a Macronix MX25L3273F
+(`mx25l3273f-spi-x1_x2_x4`), not the Micron N25Q032A named in the manual.
+On boards with a different flash, pass the part name as an argument:
+`-tclargs <cfgmem part>`.
 
-## Simulazione (xsim)
+## Simulation (xsim)
 
-Da eseguire in una cartella di lavoro fuori dal progetto, perché xsim crea
-`xsim.dir` nella cartella corrente. `<repo>` è il percorso di questo progetto.
+Run from a working directory outside the project, because xsim creates
+`xsim.dir` in the current directory. `<repo>` is the path to this project.
 
-Temporizzazione:
+Timing:
 
 ```
 xvlog <repo>/rtl/vga_timing.v <repo>/sim/tb_vga_timing.v
@@ -107,7 +107,7 @@ xelab tb_vga_timing -s tb_timing
 xsim tb_timing -R
 ```
 
-Intero chip (MMCM incluso, circa 3 minuti):
+Full chip (MMCM included, about 3 minutes):
 
 ```
 xvlog <repo>/rtl/*.v <repo>/sim/tb_vga_top.v $XILINX_VIVADO/data/verilog/src/glbl.v
@@ -115,4 +115,4 @@ xelab tb_vga_top glbl -L unisims_ver -s tb_top
 xsim tb_top -R
 ```
 
-Entrambi i testbench stampano `PASS` o `FAIL` con il numero di errori.
+Both testbenches print `PASS` or `FAIL` with the number of errors.
