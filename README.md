@@ -8,7 +8,7 @@ pixel uses the format `0b00rrggbb` (2 bits per colour, 64 colours).
 - VGA 320x200@70Hz 64 colours
 - static image produced via combinatorial logic
 - Cmod pushbutton 0 resets the logic
-- Cmod LED 0 always on; off during reset
+- Cmod LED 0 on while the pixel clock is running (MMCM locked); stays on during reset
 - Cmod LED 1 blinks once per second; off during reset
 
 ![the real circuit on breadboard](img/the_real_circuit.jpg)
