@@ -11,7 +11,13 @@ pixel uses the format `0b00rrggbb` (2 bits per colour, 64 colours).
 - Cmod LED 0 on while the pixel clock is running (MMCM locked); stays on during reset
 - Cmod LED 1 blinks once per second; off during reset
 
-![the real circuit on breadboard](img/the_real_circuit.jpg)
+## Screenshots
+
+![the real circuit on the breadboard](img/the_real_circuit.jpg)
+
+![what the real monitor displays](img/results_on_the_monitor.jpg)
+
+## Graphic test pattern
 
 ![static test image](sim/test_pattern_sim.png)
 
